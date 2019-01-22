@@ -2,12 +2,12 @@ package Main;
 
 public class Animal {
     private Vector position;
-    private boolean male;
+    private AnimalStatus status;
     private float[] directionProbability = new float[Direction.values().length];
     private float probabilitySum;
     private int lifePoints;
 
-    public Animal(Vector position, int lifePoints){
+    public Animal(Vector position, int lifePoints, AnimalStatus status){
         this.position = position;
         this.lifePoints = lifePoints;
         this.probabilitySum = 0;
@@ -22,11 +22,15 @@ public class Animal {
             }
             this.probabilitySum *= 100;
         }
+        this.status = status;
+    }
+
+    public Vector getPosition() {
+        return this.position;
     }
 
     @Override
     public String toString() {
-        if(this.male)return "AM";
-        return "AF";
+        return this.status.getSymbol();
     }
 }

@@ -8,8 +8,8 @@ public class World {
     private Vector jungleSize;
     private Vector leftUpperCornerOfJungle;
 
-    private HashMap<Vector,Plant> plants = new HashMap<>();
-    private HashMap<Vector, Animal> animals = new HashMap<>();
+    private HashMap<Vector, Plant> plants = new HashMap<>();
+    private HashMap<AnimalStatus, HashMap<Vector,Animal>> animals = new HashMap<>();
 
     public World(int width, int height, int jungleWidth, int jungleHeight){
         plants.put(new Vector(0,0),new Plant(0,0));
@@ -59,8 +59,8 @@ public class World {
         return this.plants;
     }
 
-    public HashMap<Vector, Animal> getAnimals() {
-        return this.animals;
+    public HashMap<Vector, Animal> getAnimals(AnimalStatus status) {
+        return this.animals.get(status);
     }
 
     public void update(){
