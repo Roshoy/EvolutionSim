@@ -23,12 +23,11 @@ public class World {
         this.jungleSize = new Vector(jungleWidth, jungleHeight);
         this.leftUpperCornerOfJungle = new Vector((width - jungleWidth)/2,(height - jungleHeight)/2);
 
-        generateAdamAndEve(5);
+        generateAdamAndEve(1);
     }
 
     private void generateAdamAndEve(int n){
         Vector position;
-
 
         for(int i=0; i<n; i++){
             do{
@@ -41,7 +40,7 @@ public class World {
             else
                 newStatus = AnimalStatus.FEMALE;
 
-            this.animals.get(newStatus).put(position,new Animal(position,newStatus));
+            this.animals.get(newStatus).put(position,new Animal(position, this, ));
         }
     }
 
@@ -88,9 +87,10 @@ public class World {
     }
 
     public boolean canMoveTo(Vector position, AnimalStatus status){
-        if(animals.get(status).containsKey(status))return false;
-        if(position.biggerOrEqualThan(mapSize) || position.smallerThan(new Vector(0,0))) return false;
-        return true;
+        if(position.biggerOrEqualThan(new Vector(0,0)) && position.smallerThan(this.mapSize)) return true;
+
+        if(!this.animals.get(status).containsKey(position))return true;
+        return false;
     }
 
     public String isOccupiedBy(Vector position){
@@ -105,8 +105,40 @@ public class World {
         return "  "; // two spaces
     }
 
-    public void update(){
+    public void newDay(){
         growPlants();
+        for(HashMap<Vector,Animal> animals: this.animals.values()){
+            for(Animal animal: animals.values()){
+                updateAnimal(animal);
+            }
+        }
+        for(Animal kid: this.animals.get(AnimalStatus.KID).values()){
+
+        }
+        for(Animal male: this.animals.get(AnimalStatus.MALE).values()){
+
+        }
+    }
+
+    public void updateAnimal(Animal animal){
+        this.animals.get(animal.getStatus()).remove(animal.getPosition());
+        animal.move();
+        this.animals.get(animal.getStatus()).put(animal.getPosition(), animal);
+    }
+
+    public int eatPlant(Vector position){
+        if(!this.plants.containsKey(position))return 0;
+        return this.plants.remove(position).getEnergyValue();
+    }
+
+    public void mate(Animal male){
+        if(animals.get(AnimalStatus.FEMALE).containsKey(male.getPosition())){
+            Animal female = animals.get(AnimalStatus.FEMALE).get(male.getPosition());
+            if(female.canMate() && male.canMate()){
+                Animal kid = new Animal(male.getPosition(), this, );
+                animals.get(AnimalStatus.KID).put(kid.getPosition(), kid);
+            }
+        }
     }
 
 }
