@@ -8,9 +8,6 @@ public class WorldVisualiser {
 
         StringBuilder string = new StringBuilder();
         Vector mapSize = world.getMapSize();
-//        Vector temp = world.getPlants().keySet().iterator().next();
-//        System.out.println(temp);
-//        System.out.println(world.getPlants().containsKey(temp));
         string.append('+');
         for(int x=0; x<mapSize.getX()*2; x++){
             string.append('-');
@@ -25,13 +22,7 @@ public class WorldVisualiser {
 //                    System.out.println(world.getPlants().containsKey(temp));
 //                    System.out.println(world.getPlants().containsKey(pos));
 //                }
-                if(world.getAnimals().containsKey(pos)){
-                    string.append(world.getAnimals().get(pos));
-                }else if(world.getPlants().containsKey(pos)){
-                    string.append("Pl");
-                }else {
-                    string.append("  ");
-                }
+                string.append(world.isOccupiedBy(pos));
             }
             string.append("|\n");
         }

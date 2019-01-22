@@ -12,13 +12,37 @@ public class World {
     private HashMap<AnimalStatus, HashMap<Vector,Animal>> animals = new HashMap<>();
 
     public World(int width, int height, int jungleWidth, int jungleHeight){
-        plants.put(new Vector(0,0),new Plant(0,0));
+        for(AnimalStatus status: AnimalStatus.values()){
+            this.animals.put(status,new HashMap<>());
+        }
+
         if(width < jungleWidth) width = jungleWidth;
         if(height < jungleHeight) height = jungleHeight;
 
         this.mapSize = new Vector(width,height);
         this.jungleSize = new Vector(jungleWidth, jungleHeight);
         this.leftUpperCornerOfJungle = new Vector((width - jungleWidth)/2,(height - jungleHeight)/2);
+
+        generateAdamAndEve(5);
+    }
+
+    private void generateAdamAndEve(int n){
+        Vector position;
+
+
+        for(int i=0; i<n; i++){
+            do{
+                position = new Vector(Random.rand(0,mapSize.getX()), Random.rand(0,mapSize.getY()));
+            }while(isOccupiedBy(position).startsWith("A"));
+            AnimalStatus newStatus;
+
+            if(Random.rand(0,2) == 0)
+                newStatus = AnimalStatus.MALE;
+            else
+                newStatus = AnimalStatus.FEMALE;
+
+            this.animals.get(newStatus).put(position,new Animal(position,newStatus));
+        }
     }
 
     private void growPlants(){
@@ -61,6 +85,24 @@ public class World {
 
     public HashMap<Vector, Animal> getAnimals(AnimalStatus status) {
         return this.animals.get(status);
+    }
+
+    public boolean canMoveTo(Vector position, AnimalStatus status){
+        if(animals.get(status).containsKey(status))return false;
+        if(position.biggerOrEqualThan(mapSize) || position.smallerThan(new Vector(0,0))) return false;
+        return true;
+    }
+
+    public String isOccupiedBy(Vector position){
+        for(AnimalStatus status: AnimalStatus.values()){
+            if(this.animals.get(status).containsKey(position)){
+                return status.getSymbol();
+            }
+        }
+        if(plants.containsKey(position)){
+            return "Pl";
+        }
+        return "  "; // two spaces
     }
 
     public void update(){
