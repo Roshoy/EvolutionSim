@@ -40,4 +40,9 @@ public class Vector {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", "+y+")";
+    }
 }
