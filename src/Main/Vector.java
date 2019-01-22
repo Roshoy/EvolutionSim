@@ -42,6 +42,11 @@ public class Vector {
     }
 
     @Override
+    public int hashCode() {
+        return this.x*4973 + this.y*2887;
+    }
+
+    @Override
     public String toString() {
         return "(" + x + ", "+y+")";
     }
