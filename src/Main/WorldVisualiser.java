@@ -25,7 +25,9 @@ public class WorldVisualiser {
 //                    System.out.println(world.getPlants().containsKey(temp));
 //                    System.out.println(world.getPlants().containsKey(pos));
 //                }
-                if(world.getPlants().containsKey(pos)){
+                if(world.getAnimals().containsKey(pos)){
+                    string.append(world.getAnimals().get(pos));
+                }else if(world.getPlants().containsKey(pos)){
                     string.append("Pl");
                 }else {
                     string.append("  ");

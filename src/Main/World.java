@@ -9,6 +9,7 @@ public class World {
     private Vector leftUpperCornerOfJungle;
 
     private HashMap<Vector,Plant> plants = new HashMap<>();
+    private HashMap<Vector, Animal> animals = new HashMap<>();
 
     public World(int width, int height, int jungleWidth, int jungleHeight){
         plants.put(new Vector(0,0),new Plant(0,0));
@@ -23,27 +24,25 @@ public class World {
     private void growPlants(){
         Plant newPlant1, newPlant2;
         newPlant1 = new Plant(positionForPlantInJungle());
-        plants.put(newPlant1.getPosition(),newPlant1);
-        System.out.println(newPlant1.getPosition());
-
+        this.plants.put(newPlant1.getPosition(),newPlant1);
         newPlant2 = new Plant(positionForPlantOutOfJungle());
-        plants.put(newPlant2.getPosition(),newPlant2);
+        this.plants.put(newPlant2.getPosition(),newPlant2);
     }
 
     private Vector positionForPlantInJungle(){
         Vector position;
         do {
-            position = new Vector((int) (Math.random() * jungleSize.getX()), (int) (Math.random() * jungleSize.getY()));
+            position = new Vector(Random.rand(0,this.jungleSize.getX()), Random.rand(0,this.jungleSize.getY()));
             position = position.add(this.leftUpperCornerOfJungle);
-        }while(plants.keySet().contains(position));
+        }while(this.plants.keySet().contains(position));
        return position;
     }
 
     private Vector positionForPlantOutOfJungle(){
         Vector position;
         do {
-            position = new Vector((int) (Math.random() * mapSize.getX()), (int) (Math.random() * mapSize.getY()));
-        }while(inJungle(position) || plants.keySet().contains(position) );
+            position = new Vector(Random.rand(0,this.mapSize.getX()), Random.rand(0,this.mapSize.getY()));
+        }while(inJungle(position) || this.plants.keySet().contains(position) );
         return position;
     }
 
@@ -53,11 +52,15 @@ public class World {
     }
 
     public Vector getMapSize() {
-        return mapSize;
+        return this.mapSize;
     }
 
     public HashMap<Vector, Plant> getPlants() {
-        return plants;
+        return this.plants;
+    }
+
+    public HashMap<Vector, Animal> getAnimals() {
+        return this.animals;
     }
 
     public void update(){
