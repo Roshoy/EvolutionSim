@@ -1,9 +1,8 @@
 package Main;
 
-public enum AnimalStatus {
+public enum Gender {
     MALE,
-    FEMALE,
-    KID;
+    FEMALE;
 
     @Override
     public String toString() {
@@ -12,12 +11,10 @@ public enum AnimalStatus {
 
     public String getSymbol(){
         switch(this){
-            case KID:
-                return "AK";
             case MALE:
-                return "AM";
+                return "A ";
             case FEMALE:
-                return "AF";
+                return "A ";
         }
         return "!!";
     }

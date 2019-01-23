@@ -1,13 +1,13 @@
 package Main;
 
 public class Plant {
-    private char representation = 'P';
+    private String representation = "P ";
     private Vector position;
     private int energyValue;
 
     public Plant (int x, int y){
         this.position = new Vector(x,y);
-        this.energyValue = 1;//???
+        this.energyValue = 15;//???
     }
 
     public Plant (Vector position){
@@ -25,6 +25,6 @@ public class Plant {
 
     @Override
     public String toString() {
-        return "Pl";
+        return "P ";
     }
 }

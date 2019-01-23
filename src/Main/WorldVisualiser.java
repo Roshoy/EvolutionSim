@@ -4,7 +4,7 @@ public class WorldVisualiser {
     private static final char emptyTail = ' ';
 
 
-    public void draw(World world){
+    public StringBuilder draw(World world){
 
         StringBuilder string = new StringBuilder();
         Vector mapSize = world.getMapSize();
@@ -17,11 +17,6 @@ public class WorldVisualiser {
             string.append('|');
             for(int x=0; x<mapSize.getX(); x++){
                 Vector pos = new Vector(x,y);
-//                if(pos.equals(temp) && temp.equals(pos)) {
-//                    System.out.println("no równe");
-//                    System.out.println(world.getPlants().containsKey(temp));
-//                    System.out.println(world.getPlants().containsKey(pos));
-//                }
                 string.append(world.isOccupiedBy(pos));
             }
             string.append("|\n");
@@ -31,8 +26,8 @@ public class WorldVisualiser {
             string.append('-');
         }
         string.append("+\n");
-        System.out.println(string);
-
+        //System.out.println(string);
+        return string;
     }
 
 }

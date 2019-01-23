@@ -50,4 +50,8 @@ public class Vector {
     public String toString() {
         return "(" + x + ", "+y+")";
     }
+
+    public int getField(){
+        return x*y;
+    }
 }

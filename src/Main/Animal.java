@@ -2,75 +2,63 @@ package Main;
 
 public class Animal {
     private Vector position;
-    private AnimalStatus status;
-    private float[] directionProbability = new float[Direction.values().length];
-    private float[] probabilitySum = new float[1+Direction.values().length];
-    private int lifePoints = 10;
-    private static int MaxLifePoints = 10;
+    private Gender gender;
+    private boolean adult = false;
+    private int[] directionProbability = new int[Direction.values().length];
+    private int[] probabilitySum = new int[1+Direction.values().length];
+    private int lifePoints = 40;
+    private static int MaxLifePoints = 100;
     private static int LifeLoss = 1;
-    private static int MatingCap = 5;
+    private static int MatingCap = 20;
     private int age = 0;
-    private static int AdultAge = 2;
+    private static int AdultAge = 21;
     private World world; // only one
 
-    public Animal(Vector position, World world, int lifePoints){
+    public Animal(Vector position, World world, int lifePoints ) {
         this.position = position;
-        this.lifePoints = lifePoints;
+        this.lifePoints = this.MaxLifePoints;
+        if(lifePoints != -1)this.lifePoints = lifePoints;
         this.probabilitySum[0] = 0;
-
-        this.status = AnimalStatus.KID;
 
         this.world = world;
 
-        showProbability();
-        showProbabilitySums();
+        if(Random.rand(0,2) == 0)
+            this.gender = Gender.MALE;
+        else
+            this.gender = Gender.FEMALE;
+
     }
 
     public void setRandomGenes(){
 
         for(int i=0; i<this.directionProbability.length; i++){
-            this.directionProbability[i] = Random.randF(0,10);
+            this.directionProbability[i] = Random.rand(1,100);
             this.probabilitySum[i+1] = this.probabilitySum[i] + this.directionProbability[i];
-        }
-
-        if(this.probabilitySum[this.probabilitySum.length-1] < 0.1){
-            for(int i=0; i<this.directionProbability.length; i++) {
-                this.directionProbability[i] *= 100;
-                this.probabilitySum[i+1] *= 100;
-            }
         }
     }
 
     public void setGenes(Animal parent1, Animal parent2){
-
         for(int i=0; i<this.directionProbability.length; i++){
-            this.directionProbability[i] = Random.randF(parent1.getGenes()[i],parent2.getGenes()[i]);
+            int left = Math.min(parent1.getGenes()[i],parent2.getGenes()[i]);
+            int right = Math.max(parent1.getGenes()[i],parent2.getGenes()[i]);
+            if(left > 1)left--;
+            this.directionProbability[i] = Random.rand(left,right);
             this.probabilitySum[i+1] = this.probabilitySum[i] + this.directionProbability[i];
         }
-
+        showGenes();
     }
 
-    public void showProbabilitySums(){
+    public void showGenes(){
         StringBuilder string = new StringBuilder();
         string.append("[ ");
-        for(float i: this.probabilitySum){
-            string.append(i + " ");
+        for(int gene: directionProbability){
+            string.append(gene + " ");
         }
-        string.append(" ]");
+        string.append("]\n");
         System.out.println(string);
     }
 
-    public void showProbability(){
-        StringBuilder string = new StringBuilder();
-        string.append("[ ");
-        for(float i: this.directionProbability){
-            string.append(i + " ");
-        }
-        string.append(" ]");
-        System.out.println(string);
-    }
-
-    public float[] getGenes() {
+    public int[] getGenes() {
         return this.directionProbability;
     }
 
@@ -80,62 +68,75 @@ public class Animal {
 
     private Vector randomDirection(){
         float random = Random.randF(this.probabilitySum[0],this.probabilitySum[this.probabilitySum.length-1]);
-
+        boolean surrounded = true;
+        for(int i=0; i<directionProbability.length; i++){
+            if(world.canMoveTo(this.position.add(Direction.values()[i].getVector()),this.gender)){
+                surrounded = false;
+            }
+        }
+        if(surrounded)return new Vector(0,0);
         int i;
         for(i=0 ;i<this.directionProbability.length; i++){
             if(random>=this.probabilitySum[i] && random<this.probabilitySum[i+1]){
-                System.out.println("Losowe: " + random + "    i: "+ i);
                 break;
             }
         }
-        if(i==this.directionProbability.length){
-            System.out.println(i);
-            i--;
-        }
-
         return Direction.values()[i].getVector();
     }
 
-    public AnimalStatus getStatus() {
-        return this.status;
+    public Gender getGender() {
+        return this.gender;
     }
 
     public void move(){
         Vector newPosition;
         do{
             newPosition = this.position.add(randomDirection());
-        }while(!this.world.canMoveTo(newPosition,this.status));
+        }while(!this.world.canMoveTo(newPosition,this.gender));
+        //if(this.position.equals(newPosition)) System.out.println("Same place");
         this.position = newPosition;
     }
 
-    public void update(){
-        move();
+    public boolean isAdult(){
+        return this.adult;
+    }
+
+    public void increaseAge(){
+        this.age++;
+        if(age>=AdultAge){
+            this.adult = true;
+        }
+
+    }
+
+    public int updateLife(){
         this.lifePoints -= this.LifeLoss;
-        this.world.eatPlant(this.position);
+        this.lifePoints += this.world.getPlantEnergy(this.position);
+
+        return this.lifePoints;
     }
 
     public boolean canMate() {
-        return this.lifePoints>this.MatingCap;
+        return this.adult && this.lifePoints>this.MatingCap;
     }
 
     public Animal mate(Animal other){
 
-        if(!other.canMate() || !this.canMate()){
+        if(!this.canMate() || !other.canMate() || randomDirection().equals(new Vector(0,0))){
             return null;
         }
-        Animal kid = new Animal(this.position, this.world, );
+
+        Animal kid = new Animal(this.position, this.world, this.lifePoints/2 + other.lifePoints/2);
+        this.lifePoints -= this.lifePoints/2;
+        other.lifePoints -= other.lifePoints/2;
+
+        kid.setGenes(this,other);
 
         return kid;
     }
 
-    private boolean damageSelf(int dmg){
-        this.lifePoints -= dmg;
-        if(this.lifePoints < 0)return false;
-        return true;
-    }
-
     @Override
     public String toString() {
-        return this.status.getSymbol();
+        return this.gender.getSymbol();
     }
 }
