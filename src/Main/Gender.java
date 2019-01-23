@@ -12,10 +12,10 @@ public enum Gender {
     public String getSymbol(){
         switch(this){
             case MALE:
-                return "A ";
+                return " F ";
             case FEMALE:
-                return "A ";
+                return " M ";
         }
-        return "!!";
+        return "!!!";
     }
 }

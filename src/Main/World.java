@@ -14,10 +14,6 @@ public class World {
         for(Gender status: Gender.values()){
             this.animals.put(status,new HashMap<>());
         }
-
-        if(width < jungleWidth) width = jungleWidth;
-        if(height < jungleHeight) height = jungleHeight;
-
         generateAdamAndEve(14);
     }
 
@@ -27,19 +23,19 @@ public class World {
             do{
                 position = new Vector(Random.rand(0,this.map.getMapSize().getX()),
                         Random.rand(0,this.map.getMapSize().getY()));
-            }while(isOccupiedBy(position).startsWith("A"));
+            }while(isOccupiedBy(position).startsWith(" A"));
             Animal newAnimal = new Animal(position, this, -1);
             newAnimal.setRandomGenes();
+
+            if(i==0)newAnimal.setGender(Gender.MALE); //Adam
+            if(i==1)newAnimal.setGender(Gender.FEMALE); //Eve
             addNewAnimal(newAnimal);
         }
     }
 
     private void addNewAnimal(Animal newAnimal){
-
         newAnimal.move();
-
         this.animals.get(newAnimal.getGender()).put(newAnimal.getPosition(), newAnimal);
-
         this.leftAlive++;
         this.born++;
     }
@@ -83,20 +79,55 @@ public class World {
             }
         }
         if(this.map.plantOn(position)){
-            return "P ";
+            return " P ";
         }
-        return "  "; // two spaces
+        return "   "; // two spaces
+    }
+
+    public String showGenes(){
+        if(this.leftAlive == 0)return "";
+        int[] maxProb = new int[8];
+        int[] averageProb = new int[8];
+        int[] minProb = new int[8];
+        for(int i=0; i<Direction.values().length; i++){
+            maxProb[i] = 0;
+            averageProb[i] = 0;
+            minProb[i] = Integer.MAX_VALUE;
+        }
+
+        StringBuilder string = new StringBuilder();
+        for(HashMap<Vector,Animal> animals: this.animals.values()){
+            for(Animal animal: animals.values()){
+                int[] genes = animal.getGenes();
+                for(int i=0; i<Direction.values().length; i++){
+                    maxProb[i] = Math.max(maxProb[i],genes[i]);
+                    minProb[i] = Math.min(minProb[i],genes[i]);
+                    averageProb[i] += genes[i];
+                }
+               //string.append(animal.showGenes());
+            }
+        }
+
+        for(int i=0; i<Direction.values().length; i++){
+            averageProb[i] /= this.leftAlive;
+        }
+
+        string.append(WorldVisualiser.genesToString(maxProb));
+        string.append(WorldVisualiser.genesToString(averageProb));
+        string.append(WorldVisualiser.genesToString(minProb));
+
+        return string.toString();
     }
 
     public int newDay(){
         this.map.growPlants();
-
         for(HashMap<Vector,Animal> animals: this.animals.values()){
             List<Animal> animalCollection = new ArrayList<>(animals.values());
             for(Animal animal: animalCollection){
                 updateAnimalPosition(animal);
-                animal.increaseAge();
-                if(animal.updateLife()<0){
+                if(animal.increaseAge()>1000){
+                    animalDies(animal);
+                }else if(animal.updateLife()<0){
                     animalDies(animal);
                 }
             }
@@ -110,8 +141,11 @@ public class World {
         showAllAnimalsPositions();
         //System.out.println("Born: " + this.born);
         //System.out.println("Left alive: " + this.leftAlive);
+        int males = this.animals.get(Gender.MALE).size();
+        if(males == 0 || males == this.leftAlive){
+            return 0;
+        }
         return this.leftAlive;
-
     }
 
     public void updateAnimalPosition(Animal animal){

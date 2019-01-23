@@ -3,6 +3,8 @@ package Main;
 import org.fusesource.jansi.AnsiConsole;
 import java.util.concurrent.TimeUnit;
 
+import static org.fusesource.jansi.Ansi.ansi;
+
 
 public class Engine {
     public static void main (String[] args) {
@@ -14,29 +16,32 @@ public class Engine {
         try {
             int maxDays=0;
 
-            for(int j=0; j< 100000; j++) {
+            for(int j=0; j< 1000; j++) {
                 //System.out.println("Pętla");
                 String previousState="";
                 String actualState;
-                World world = new World(40, 40, 10, 10);
-                for (int i = 0; i < 3000; i++) {
-                    //System.out.println("Day: " + i);
+                World world = new World(25, 25, 10, 10);
+                for (int i = 0; i < 300000; i++) {
+
                     int lifeStock = world.newDay();
                     actualState = visualiser.draw(world).toString();
                     if (lifeStock == 0 || actualState.equals(previousState)){
                         if(i>maxDays){
                             maxDays = i;
-                            System.out.println("MaxDays: " + maxDays);
+                            System.out.println("MaxDays: " + maxDays + "Life stock: " + lifeStock);
                         }
                         break;
                     }
                     previousState = actualState;
 
-                    //if (i % 1 == 0) {
+                    if (i % 100 == 0) {
+                        System.out.println(ansi().eraseScreen());
+                        System.out.println("Day: " + i);
 
+                        System.out.println(actualState);
                         //
-                        //TimeUnit.MILLISECONDS.sleep(5);
-                    //}
+                        TimeUnit.MILLISECONDS.sleep(1000);
+                    }
                 }
                 //visualiser.draw(world);
             }

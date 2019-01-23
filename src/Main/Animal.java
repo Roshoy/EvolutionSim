@@ -9,8 +9,8 @@ public class Animal {
     private int lifePoints = 100;
     private  int MaxLifePoints = 100;
     private  int LifeLoss = 1;
-    private  int MatingCap = 20;
-    private  int AdultAge = 11;
+    private  int MatingCap = 10;
+    private  int AdultAge = 3;
     private int age = 0;
     private World world; // only one
 
@@ -28,6 +28,10 @@ public class Animal {
         else
             this.gender = Gender.FEMALE;
 
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 
     public void setRandomGenes(){
@@ -49,14 +53,11 @@ public class Animal {
         //showGenes();
     }
 
-    public void showGenes(){
+    public String showGenes(){
         StringBuilder string = new StringBuilder();
-        string.append("[ ");
-        for(int gene: directionProbability){
-            string.append(gene + " ");
-        }
-        string.append("]\n");
-        System.out.println(string);
+        string.append(WorldVisualiser.genesToString(this.directionProbability));
+        //System.out.println(string);
+        return string.toString();
     }
 
     public int[] getGenes() {
@@ -84,7 +85,6 @@ public class Animal {
             }
         }
 
-
         return Direction.values()[i].getVector();
     }
 
@@ -105,12 +105,12 @@ public class Animal {
         return this.adult;
     }
 
-    public void increaseAge(){
+    public int increaseAge(){
         this.age++;
         if(age>=AdultAge){
             this.adult = true;
         }
-
+        return this.age;
     }
 
     public int updateLife(){
