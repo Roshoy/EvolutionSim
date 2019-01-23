@@ -8,6 +8,7 @@ public class World {
     private int born = 0;
     private WorldMap map;
 
+
     public World(int width, int height, int jungleWidth, int jungleHeight){
         this.map = new WorldMap(new Vector(width,height), new Vector(jungleWidth,jungleHeight));
         for(Gender status: Gender.values()){
@@ -34,9 +35,11 @@ public class World {
     }
 
     private void addNewAnimal(Animal newAnimal){
+
         newAnimal.move();
+
         this.animals.get(newAnimal.getGender()).put(newAnimal.getPosition(), newAnimal);
-        //System.out.println("New happy kid!");
+
         this.leftAlive++;
         this.born++;
     }
@@ -44,7 +47,7 @@ public class World {
     private void animalDies(Animal body){
         this.animals.get(body.getGender()).remove(body.getPosition());
         this.leftAlive--;
-        //System.out.println("Died: " + body.getPosition());
+
     }
 
     public Vector getMapSize() {
@@ -91,21 +94,19 @@ public class World {
         for(HashMap<Vector,Animal> animals: this.animals.values()){
             List<Animal> animalCollection = new ArrayList<>(animals.values());
             for(Animal animal: animalCollection){
-
                 updateAnimalPosition(animal);
-
-
-                    animal.increaseAge();
-
+                animal.increaseAge();
                 if(animal.updateLife()<0){
                     animalDies(animal);
                 }
             }
         }
+
         List<Animal> maleList = new ArrayList<>(this.animals.get(Gender.MALE).values());
         for(Animal male: maleList){
             mate(male);
         }
+
         showAllAnimalsPositions();
         //System.out.println("Born: " + this.born);
         //System.out.println("Left alive: " + this.leftAlive);
@@ -128,6 +129,7 @@ public class World {
         if(animals.get(Gender.FEMALE).containsKey(male.getPosition())){
             Animal female = animals.get(Gender.FEMALE).get(male.getPosition());
             Animal newAnimal = male.mate(female);
+
             if(newAnimal != null) addNewAnimal(newAnimal);
 
         }

@@ -2,7 +2,7 @@ package Main;
 
 public class Random {
     public static int rand(int from, int to){
-        return from + (int)(Math.random() * (to-from));
+        return from + (int)Math.floor(Math.random() * (double)(to-from));
     }
 
     public static float randF(float from, float to){
