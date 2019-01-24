@@ -17,5 +17,6 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" exported="" name="org.fusesource.jansi:jansi:1.17.1" level="project" />
   </component>
 </module>

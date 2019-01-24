@@ -5,7 +5,6 @@ import java.util.*;
 public class World {
     private HashMap<Gender, HashMap<Vector, Animal>> animals = new HashMap<>();
     private int leftAlive = 0;
-    private int born = 0;
     private WorldMap map;
 
 
@@ -18,13 +17,14 @@ public class World {
     }
 
     private void generateAdamAndEve(int n){
-        Vector position;
+        Vector position = new Vector(0,0);
         for(int i=0; i<n; i++){
+            Animal newAnimal = new Animal(position, this, -1);
             do{
                 position = new Vector(Random.rand(0,this.map.getMapSize().getX()),
                         Random.rand(0,this.map.getMapSize().getY()));
-            }while(isOccupiedBy(position).startsWith(" A"));
-            Animal newAnimal = new Animal(position, this, -1);
+            }while(isOccupiedBy(position).equals(newAnimal.toString()));
+            newAnimal.setPosition(position);
             newAnimal.setRandomGenes();
 
             if(i==0)newAnimal.setGender(Gender.MALE); //Adam
@@ -37,7 +37,6 @@ public class World {
         newAnimal.move();
         this.animals.get(newAnimal.getGender()).put(newAnimal.getPosition(), newAnimal);
         this.leftAlive++;
-        this.born++;
     }
 
     private void animalDies(Animal body){
@@ -57,17 +56,14 @@ public class World {
         return true;
     }
 
-    public void showAllAnimalsPositions(){
+    public String showAllAnimalsPositions(){
         StringBuilder string = new StringBuilder();
-        int count=0;
         for(Gender status: Gender.values()){
             for(Animal animal: this.animals.get(status).values()){
                 string.append(animal.getPosition() + "\n");
-                count++;
             }
         }
-       // System.out.println("Liczba pozycji: " + count);
-        //System.out.println(string);
+        return string.toString();
     }
 
     public String isOccupiedBy(Vector position){
@@ -81,7 +77,7 @@ public class World {
         if(this.map.plantOn(position)){
             return " P ";
         }
-        return "   "; // two spaces
+        return "   "; // three spaces
     }
 
     public String showGenes(){
@@ -104,7 +100,7 @@ public class World {
                     minProb[i] = Math.min(minProb[i],genes[i]);
                     averageProb[i] += genes[i];
                 }
-               //string.append(animal.showGenes());
+
             }
         }
 
@@ -139,8 +135,6 @@ public class World {
         }
 
         showAllAnimalsPositions();
-        //System.out.println("Born: " + this.born);
-        //System.out.println("Left alive: " + this.leftAlive);
         int males = this.animals.get(Gender.MALE).size();
         if(males == 0 || males == this.leftAlive){
             return 0;

@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="org.fusesource.jansi:jansi:1.17.1" type="repository">
+    <properties maven-id="org.fusesource.jansi:jansi:1.17.1" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/jansi-1.17.1.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
